@@ -1,8 +1,24 @@
 import dotenv from "dotenv";
 import connectionDB from "./db/index.js";
+import Express from "express";
 dotenv.config({ path: "./env" });
 
-connectionDB();
+const app = Express();
+
+connectionDB()
+  .then(() => {
+    app.on("Error", (error) => {
+      console.log("Server Error", error);
+      throw error;
+    });
+    (app.listen(process.env.PORT),
+      () => {
+        console.log(`Server is Runnimng on Porat :  ${process.env.PORT}`);
+      });
+  })
+  .catch((err) => {
+    console.error("MongoDE connection Error: ", err);
+  });
 
 /*
 first approch to connect database and start server
