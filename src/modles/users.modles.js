@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+// user schema modles
 const userSchema = new Schema(
   {
     username: {
@@ -26,11 +27,11 @@ const userSchema = new Schema(
       index: true,
     },
     avatar: {
-      type: String, // cloudinary public_id or URL
+      type: String, // cloudinary URL
       required: true,
     },
     coverImage: {
-      type: String, // cloudinary public_id or URL
+      type: String, // cloudinary URL
     },
     watchHistory: [
       {
@@ -49,16 +50,18 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+// Before save the user password encript the password using bcrypt pakage and also check if password is modified or not. if password is modified then only hash the password and save to database othetwise nothing to do.
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
+// method to compare user password and encripted password.
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// method to generate jwt access token and refresh token
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {

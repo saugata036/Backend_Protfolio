@@ -1,23 +1,22 @@
 import dotenv from "dotenv";
 import connectionDB from "./db/index.js";
 import Express from "express";
-dotenv.config({ path: "./env" });
+dotenv.config({ path: "./.env" });
 
 const app = Express();
-
 connectionDB()
   .then(() => {
-    app.on("Error", (error) => {
+    app.on("error", (error) => {
       console.log("Server Error", error);
       throw error;
     });
-    (app.listen(process.env.PORT),
-      () => {
-        console.log(`Server is Runnimng on Porat :  ${process.env.PORT}`);
-      });
+
+    app.listen(process.env.PORT, () => {
+      console.log(`✅ Server is running on port ${process.env.PORT}`);
+    });
   })
   .catch((err) => {
-    console.error("MongoDE connection Error: ", err);
+    console.error("MongoDB connection Error: ", err);
   });
 
 /*
